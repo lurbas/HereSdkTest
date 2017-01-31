@@ -50,5 +50,8 @@ dependencies {
     // Permissions
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.1@aar'
 
+    // Search View
+    compile 'com.github.arimorty:floatingsearchview:2.0.3'
+
     testCompile 'junit:junit:4.12'
 }
