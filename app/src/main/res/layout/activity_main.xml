@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <com.arlib.floatingsearchview.FloatingSearchView
+    <com.lucasurbas.heresdktest.ui.widget.RxSearchView
         android:id="@+id/activity_map__search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,7 +30,7 @@
         app:floatingSearch_searchHint="@string/activity_map__search_hint"
         app:floatingSearch_showSearchKey="false"
         app:floatingSearch_suggestionsListAnimDuration="200"/>
-    
+
     <LinearLayout
         android:id="@+id/activity_map__no_permissions"
         android:layout_width="match_parent"

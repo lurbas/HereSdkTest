@@ -1,8 +1,7 @@
 package com.lucasurbas.heresdktest.ui.map;
 
-import android.os.Bundle;
-
 import com.here.android.mpa.search.Place;
+import com.lucasurbas.heresdktest.model.MapSuggestion;
 import com.lucasurbas.heresdktest.ui.utils.BaseNavigator;
 import com.lucasurbas.heresdktest.ui.utils.BasePresenter;
 import com.lucasurbas.heresdktest.ui.utils.BaseView;
@@ -25,6 +24,8 @@ public interface MapContract {
 
         void showNoPermissionScreen(boolean show);
 
+        void showAutoSuggestions(List<MapSuggestion> suggestions);
+
         void showToast(String message);
 
         void askForLocationPermission();
@@ -34,15 +35,15 @@ public interface MapContract {
 
     interface Presenter extends BasePresenter<View> {
 
-        Bundle saveState();
-
-        void restoreState(Bundle bundle);
-
         void create();
 
         void retryPermissionsClicked();
 
         void permissionResult(boolean granted);
+
+        void getAutoSuggestions(String query);
+
+        void getPlaces(String query);
 
         void placeClick(Place place);
 

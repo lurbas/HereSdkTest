@@ -4,6 +4,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
@@ -13,16 +14,20 @@ import com.lucasurbas.heresdktest.R;
 import com.lucasurbas.heresdktest.injection.app.ApplicationComponent;
 import com.lucasurbas.heresdktest.injection.map.DaggerMapComponent;
 import com.lucasurbas.heresdktest.injection.map.MapModule;
+import com.lucasurbas.heresdktest.model.MapSuggestion;
 import com.lucasurbas.heresdktest.ui.utils.BaseActivity;
+import com.lucasurbas.heresdktest.ui.widget.RxSearchView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 public class HereMapActivity extends BaseActivity implements MapContract.View {
@@ -30,6 +35,7 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     @Inject MapContract.Presenter presenter;
 
     @BindView(R.id.activity_map__no_permissions) View noPermissions;
+    @BindView(R.id.activity_map__search_view) RxSearchView searchView;
 
     // map embedded in the map fragment
     private Map map;
@@ -48,6 +54,7 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        setupSearchView();
 
         presenter.attachView(this);
         presenter.create();
@@ -57,6 +64,31 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     protected void onDestroy() {
         super.onDestroy();
         presenter.detachView();
+    }
+
+    private void setupSearchView() {
+        compositeSubscription.add(
+                searchView.getOnQueryChangeObservable()
+                        .skip(1)
+                        .debounce(500, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String query) {
+                                presenter.getAutoSuggestions(query);
+                            }
+                        }));
+
+        compositeSubscription.add(
+                searchView.getOnSearchObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String query) {
+                                presenter.getPlaces(query);
+                            }
+                        }));
+
     }
 
     @OnClick(R.id.activity_map__retry_permissions)
@@ -75,8 +107,13 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     }
 
     @Override
-    public void showToast(String message) {
+    public void showAutoSuggestions(List<MapSuggestion> suggestions) {
+        searchView.swapSuggestions(suggestions);
+    }
 
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

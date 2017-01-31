@@ -2,7 +2,6 @@ package com.lucasurbas.heresdktest.ui.map;
 
 
 import android.content.Context;
-import android.os.Bundle;
 
 import com.here.android.mpa.search.Place;
 
@@ -31,16 +30,6 @@ public class MapPresenter implements MapContract.Presenter {
     }
 
     @Override
-    public Bundle saveState() {
-        return null;
-    }
-
-    @Override
-    public void restoreState(Bundle bundle) {
-
-    }
-
-    @Override
     public void create() {
         if (view != null) {
             view.askForLocationPermission();
@@ -62,6 +51,16 @@ public class MapPresenter implements MapContract.Presenter {
         } else if (view != null) {
             view.showNoPermissionScreen(true);
         }
+    }
+
+    @Override
+    public void getAutoSuggestions(String query) {
+        
+    }
+
+    @Override
+    public void getPlaces(String query) {
+
     }
 
     @Override
