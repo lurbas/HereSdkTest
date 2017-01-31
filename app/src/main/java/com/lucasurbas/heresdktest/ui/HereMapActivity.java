@@ -1,4 +1,4 @@
-package com.lucasurbas.heresdktest;
+package com.lucasurbas.heresdktest.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +7,9 @@ import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.lucasurbas.heresdktest.R;
 
-public class MainActivity extends AppCompatActivity {
+public class HereMapActivity extends AppCompatActivity {
 
 
     // map embedded in the map fragment

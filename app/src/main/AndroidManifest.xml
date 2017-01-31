@@ -10,12 +10,13 @@
 
     <application
         android:allowBackup="true"
+        android:name=".app.HereSdkTestApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.HereMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

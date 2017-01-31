@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+def commitCount = Integer.parseInt('git rev-list --all --count'.execute([], project.rootDir).text.trim())
 
 android {
     compileSdkVersion 24
@@ -7,7 +10,7 @@ android {
         applicationId "com.lucasurbas.heresdktest"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 1
+        versionCode commitCount
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -19,11 +22,26 @@ android {
     }
 }
 
+ext.supportLibraryVersion = '24.2.1'
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:24.2.1'
+
+    // Support dependencies
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:support-v4:$supportLibraryVersion"
+
+    // Dagger dependencies
+    apt "com.google.dagger:dagger-compiler:2.5"
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+    compile "com.google.dagger:dagger:2.5"
+
+    // Butterknife
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
     testCompile 'junit:junit:4.12'
 }
