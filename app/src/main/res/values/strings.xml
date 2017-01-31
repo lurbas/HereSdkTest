@@ -1,3 +1,7 @@
 <resources>
+
     <string name="app_name">HereSdkTest</string>
+
+    <string name="action_retry">Retry</string>
+    <string name="activity_map__no_permissions">HereSdkTest needs access to Location Permission</string>
 </resources>

@@ -3,7 +3,10 @@ package com.lucasurbas.heresdktest.injection.map;
 import android.content.Context;
 
 import com.lucasurbas.heresdktest.injection.ActivityScope;
-import com.lucasurbas.heresdktest.ui.HereMapActivity;
+import com.lucasurbas.heresdktest.ui.map.HereMapActivity;
+import com.lucasurbas.heresdktest.ui.map.MapContract;
+import com.lucasurbas.heresdktest.ui.map.MapNavigator;
+import com.lucasurbas.heresdktest.ui.map.MapPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,17 +20,17 @@ public class MapModule {
         this.mapActivity = mapActivity;
     }
 
-//    @Provides
-//    @ActivityScope
-//    MapContract.Presenter providePresenter(MapPresenter presenter) {
-//        return presenter;
-//    }
-//
-//    @Provides
-//    @ActivityScope
-//    MapContract.Navigator provideNavigator(DetailsNavigator navigator) {
-//        return navigator;
-//    }
+    @Provides
+    @ActivityScope
+    MapContract.Presenter providePresenter(MapPresenter presenter) {
+        return presenter;
+    }
+
+    @Provides
+    @ActivityScope
+    MapContract.Navigator provideNavigator(MapNavigator navigator) {
+        return navigator;
+    }
 
     @Provides
     @ActivityScope

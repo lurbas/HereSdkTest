@@ -1,8 +1,8 @@
 package com.lucasurbas.heresdktest.injection.map;
 
-import com.here.android.mpa.common.MapActivity;
 import com.lucasurbas.heresdktest.injection.ActivityScope;
 import com.lucasurbas.heresdktest.injection.app.ApplicationComponent;
+import com.lucasurbas.heresdktest.ui.map.HereMapActivity;
 
 import dagger.Component;
 
@@ -13,5 +13,5 @@ import dagger.Component;
 )
 public interface MapComponent {
 
-    void inject(MapActivity activity);
+    void inject(HereMapActivity activity);
 }
