@@ -53,5 +53,17 @@ dependencies {
     // Search View
     compile 'com.github.arimorty:floatingsearchview:2.0.3'
 
+    //Retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.1'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
+
+    //OkHttp
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.okio:okio:1.7.0'
+
+    //Gson
+    compile 'com.google.code.gson:gson:2.6.2'
+
     testCompile 'junit:junit:4.12'
 }

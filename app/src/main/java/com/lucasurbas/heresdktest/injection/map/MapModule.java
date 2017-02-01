@@ -34,13 +34,13 @@ public class MapModule {
 
     @Provides
     @ActivityScope
-    Context provideContext(){
+    Context provideContext() {
         return mapActivity;
     }
 
     @Provides
     @ActivityScope
-    HereMapActivity provideMapActivity(){
+    HereMapActivity provideMapActivity() {
         return mapActivity;
     }
 

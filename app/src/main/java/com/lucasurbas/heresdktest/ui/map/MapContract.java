@@ -37,6 +37,12 @@ public interface MapContract {
 
         void create();
 
+        void start();
+
+        void stop();
+
+        void mapReady();
+
         void retryPermissionsClicked();
 
         void permissionResult(boolean granted);

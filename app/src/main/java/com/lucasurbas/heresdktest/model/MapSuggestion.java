@@ -4,17 +4,16 @@ package com.lucasurbas.heresdktest.model;
 import android.os.Parcel;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.gson.annotations.Expose;
 
 public class MapSuggestion implements SearchSuggestion {
 
-    private String body;
+    @Expose
+    private String title;
 
-    public MapSuggestion(String body) {
-        this.body = body;
-    }
 
     protected MapSuggestion(Parcel in) {
-        body = in.readString();
+        title = in.readString();
     }
 
     public static final Creator<MapSuggestion> CREATOR = new Creator<MapSuggestion>() {
@@ -31,7 +30,7 @@ public class MapSuggestion implements SearchSuggestion {
 
     @Override
     public String getBody() {
-        return body;
+        return title;
     }
 
     @Override
@@ -41,6 +40,6 @@ public class MapSuggestion implements SearchSuggestion {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(body);
+        parcel.writeString(title);
     }
 }

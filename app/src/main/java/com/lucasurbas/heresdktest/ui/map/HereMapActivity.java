@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class HereMapActivity extends BaseActivity implements MapContract.View {
 
@@ -70,6 +71,12 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
         compositeSubscription.add(
                 searchView.getOnQueryChangeObservable()
                         .skip(1)
+                        .filter(new Func1<String, Boolean>() {
+                            @Override
+                            public Boolean call(String query) {
+                                return query.length() >= 2;
+                            }
+                        })
                         .debounce(500, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<String>() {
@@ -140,8 +147,11 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                     // retrieve a reference of the map from the map fragment
                     map = mapFragment.getMap();
                     // Set the zoom level to the average between min and max
-                    map.setZoomLevel(
-                            (map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+                    map.setZoomLevel(13);
+                    // show position marker
+                    map.getPositionIndicator().setVisible(true);
+
+                    presenter.mapReady();
                 } else {
                     Log.v("MAP_ERROR", "Cannot initialize Map Fragment");
                 }
