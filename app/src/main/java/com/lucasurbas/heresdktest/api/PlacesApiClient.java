@@ -1,8 +1,9 @@
 package com.lucasurbas.heresdktest.api;
 
 
-import com.lucasurbas.heresdktest.model.AutoSuggestionResponse;
-import com.lucasurbas.heresdktest.model.SearchResponse;
+import com.lucasurbas.heresdktest.model.response.AutoSuggestionResponse;
+import com.lucasurbas.heresdktest.model.response.PlaceResponse;
+import com.lucasurbas.heresdktest.model.response.SearchResponse;
 
 import java.util.Locale;
 
@@ -35,5 +36,10 @@ public class PlacesApiClient implements PlacesApi {
 
     private String getAt(double latitude, double longitude) {
         return String.format(Locale.ROOT, "%.6f,%.6f", latitude, longitude);
+    }
+
+    @Override
+    public Observable<PlaceResponse> getPlace(String detailUrl) {
+        return apiService.getPlace(detailUrl);
     }
 }

@@ -1,6 +1,7 @@
 package com.lucasurbas.heresdktest.ui.detail;
 
 
+import com.lucasurbas.heresdktest.model.PlaceDetail;
 import com.lucasurbas.heresdktest.model.PlaceLink;
 import com.lucasurbas.heresdktest.ui.utils.BaseNavigator;
 import com.lucasurbas.heresdktest.ui.utils.BasePresenter;
@@ -18,10 +19,13 @@ public interface DetailContract {
 
     interface View extends BaseView {
 
-        void showPlaceLink(PlaceLink place);
+        void showPlaceDetail(PlaceDetail place);
 
-        void showPlaceDetail(PlaceLink place);
+        void showTitle(String title);
 
+        void showLoading(boolean show);
+
+        void showToast(String message);
     }
 
     interface Presenter extends BasePresenter<DetailContract.View> {

@@ -9,9 +9,9 @@ import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.lucasurbas.heresdktest.R;
 import com.lucasurbas.heresdktest.api.PlacesApi;
-import com.lucasurbas.heresdktest.model.AutoSuggestionResponse;
+import com.lucasurbas.heresdktest.model.response.AutoSuggestionResponse;
 import com.lucasurbas.heresdktest.model.PlaceLink;
-import com.lucasurbas.heresdktest.model.SearchResponse;
+import com.lucasurbas.heresdktest.model.response.SearchResponse;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -131,8 +131,6 @@ public class MapPresenter implements MapContract.Presenter {
                 autoSuggestionSubscription.unsubscribe();
             }
             autoSuggestionSubscription = placesApi.getSuggestions(query, lastPosition.getCoordinate().getLatitude(), lastPosition.getCoordinate().getLongitude())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
                     .filter(new Func1<AutoSuggestionResponse, Boolean>() {
                         @Override
                         public Boolean call(AutoSuggestionResponse autoSuggestionResponse) {
@@ -146,6 +144,8 @@ public class MapPresenter implements MapContract.Presenter {
                             return autoSuggestionResponse.getSuggestions();
                         }
                     })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<PlaceLink>>() {
                                    @Override
                                    public void call(List<PlaceLink> mapSuggestions) {

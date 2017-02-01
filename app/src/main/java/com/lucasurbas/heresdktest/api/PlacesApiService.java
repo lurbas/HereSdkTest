@@ -1,11 +1,13 @@
 package com.lucasurbas.heresdktest.api;
 
 
-import com.lucasurbas.heresdktest.model.AutoSuggestionResponse;
-import com.lucasurbas.heresdktest.model.SearchResponse;
+import com.lucasurbas.heresdktest.model.response.AutoSuggestionResponse;
+import com.lucasurbas.heresdktest.model.response.PlaceResponse;
+import com.lucasurbas.heresdktest.model.response.SearchResponse;
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 
 public interface PlacesApiService {
@@ -25,4 +27,7 @@ public interface PlacesApiService {
             @Query(ApiConstants.PARAM_SIZE) int size,
             @Query(ApiConstants.PARAM_APP_CODE) String appCode,
             @Query(ApiConstants.PARAM_APP_ID) String appId);
+
+    @GET
+    Observable<PlaceResponse> getPlace(@Url String href);
 }

@@ -5,6 +5,7 @@
     <string name="action_retry">Retry</string>
     <string name="action_open">Open</string>
     <string name="action_cancel">Cancel</string>
+
     <string name="action_map_my_location">My Location</string>
     <string name="action_map_satellite">Satellite</string>
     <string name="action_map_regular">Regular</string>
@@ -13,6 +14,10 @@
     <string name="activity_map__no_permissions">HereSdkTest needs access to Location Permission</string>
     <string name="activity_map__search_hint">Search…</string>
     <string name="activity_map__open_detail">Open Location Detail?</string>
+
+    <string name="activity_detail__name_title">Name</string>
+    <string name="activity_detail__address_title">Address</string>
+    <string name="activity_detail__open_browser">Open In Browser</string>
 
     <string name="error__no_location">Couldn\'t find your location…</string>
     <string name="error__getting_results">Error while getting results</string>

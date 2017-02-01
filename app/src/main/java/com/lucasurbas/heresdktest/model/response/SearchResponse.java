@@ -1,4 +1,4 @@
-package com.lucasurbas.heresdktest.model;
+package com.lucasurbas.heresdktest.model.response;
 
 
 import com.google.gson.annotations.Expose;
