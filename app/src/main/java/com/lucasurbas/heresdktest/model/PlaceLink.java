@@ -24,6 +24,9 @@ public class PlaceLink implements SearchSuggestion {
     @SerializedName("href")
     private String detailUrl;
 
+    public PlaceLink(String id) {
+        this.id = id;
+    }
 
     protected PlaceLink(Parcel in) {
         id = in.readString();
@@ -74,5 +77,29 @@ public class PlaceLink implements SearchSuggestion {
 
     public String getIconUrl() {
         return iconUrl;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDetailUrl() {
+        return detailUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlaceLink placeLink = (PlaceLink) o;
+
+        return id != null ? id.equals(placeLink.id) : placeLink.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

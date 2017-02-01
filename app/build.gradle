@@ -68,5 +68,8 @@ dependencies {
     // Image Loading
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    // Dialogs
+    compile 'com.afollestad.material-dialogs:core:0.9.2.3'
+
     testCompile 'junit:junit:4.12'
 }

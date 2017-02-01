@@ -4,11 +4,14 @@ import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -16,8 +19,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.lucasurbas.heresdktest.R;
@@ -164,6 +169,8 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                             image.setBitmap(resource); // Possibly runOnUiThread()
                             MapMarker mapMarker = new MapMarker(new GeoCoordinate(placeLink.getLatitude(), placeLink.getLongitude()), image);
                             mapMarker.setAnchorPoint(new PointF(image.getWidth() / 2, image.getHeight()));
+                            mapMarker.setTitle(placeLink.getBody());
+                            mapMarker.setDescription(placeLink.getId());
                             mapObjects.add(mapMarker);
                             map.addMapObject(mapMarker);
                         }
@@ -214,6 +221,31 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                     map = mapFragment.getMap();
                     // show position marker
                     map.getPositionIndicator().setVisible(true);
+                    MapGesture.OnGestureListener listener =
+                            new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
+                                @Override
+                                public boolean onMapObjectsSelected(List<ViewObject> objects) {
+                                    for (ViewObject object : objects) {
+                                        if (object.getBaseType() == ViewObject.Type.USER_OBJECT && ((MapObject) object).getType() == MapObject.Type.MARKER) {
+                                            MapMarker mapMarker = (MapMarker) object;
+                                            presenter.markerClicked(mapMarker.getDescription(), mapMarker.getCoordinate());
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onTapEvent(PointF pointF) {
+                                    for (MapObject mapObject : mapObjects) {
+                                        if (mapObject.getType() == MapObject.Type.MARKER) {
+                                            ((MapMarker) mapObject).hideInfoBubble();
+                                        }
+                                    }
+                                    return super.onTapEvent(pointF);
+                                }
+                            };
+                    mapFragment.getMapGesture().addOnGestureListener(listener);
 
                     presenter.mapReady();
                 } else {
@@ -245,11 +277,34 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     }
 
     @Override
+    public void animateToPosition(GeoCoordinate geoCoordinate) {
+        if (map != null) {
+            map.setCenter(geoCoordinate, Map.Animation.LINEAR);
+        }
+    }
+
+    @Override
     public void showLoading(boolean show) {
         if (show) {
             searchView.showProgress();
         } else {
             searchView.hideProgress();
         }
+    }
+
+    @Override
+    public void showPlaceDialog(final PlaceLink place) {
+        new MaterialDialog.Builder(this)
+                .title(place.getBody())
+                .content(R.string.activity_map__open_detail)
+                .positiveText(R.string.action_open)
+                .negativeText(R.string.action_cancel)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        presenter.goToPlace(place);
+                    }
+                })
+                .show();
     }
 }

@@ -1,7 +1,6 @@
 package com.lucasurbas.heresdktest.ui.map;
 
 import com.here.android.mpa.common.GeoCoordinate;
-import com.here.android.mpa.search.Place;
 import com.lucasurbas.heresdktest.model.PlaceLink;
 import com.lucasurbas.heresdktest.ui.utils.BaseNavigator;
 import com.lucasurbas.heresdktest.ui.utils.BasePresenter;
@@ -15,7 +14,7 @@ public interface MapContract {
 
     interface Navigator extends BaseNavigator {
 
-        void openPlaceDetail(String itemId);
+        void openPlaceDetail(PlaceLink place);
 
     }
 
@@ -39,7 +38,11 @@ public interface MapContract {
 
         void animateToPosition(GeoCoordinate geoCoordinate, double zoom);
 
+        void animateToPosition(GeoCoordinate geoCoordinate);
+
         void showLoading(boolean show);
+
+        void showPlaceDialog(PlaceLink place);
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -58,7 +61,7 @@ public interface MapContract {
 
         void getPlaces(String query);
 
-        void placeClick(Place place);
+        void goToPlace(PlaceLink place);
 
         void mapStyleRegularClick();
 
@@ -67,5 +70,7 @@ public interface MapContract {
         void mapStyleTerrainClick();
 
         void myLocationClick();
+
+        void markerClicked(String placeId, GeoCoordinate coordinate);
     }
 }

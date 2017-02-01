@@ -3,10 +3,10 @@ package com.lucasurbas.heresdktest.ui.map;
 
 import android.content.Context;
 
+import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.search.Place;
 import com.lucasurbas.heresdktest.R;
 import com.lucasurbas.heresdktest.api.PlacesApi;
 import com.lucasurbas.heresdktest.model.AutoSuggestionResponse;
@@ -38,6 +38,8 @@ public class MapPresenter implements MapContract.Presenter {
 
     private CompositeSubscription compositeSubscription;
     private Subscription autoSuggestionSubscription;
+
+    private List<PlaceLink> places;
 
     // Define positioning listener
     private PositioningManager.OnPositionChangedListener positionListener = new
@@ -179,7 +181,8 @@ public class MapPresenter implements MapContract.Presenter {
                             if (searchResponse.getSearchResults() != null && searchResponse.getSearchResults().getPlaces() != null && !searchResponse.getSearchResults().getPlaces().isEmpty()) {
                                 if (view != null) {
                                     view.showLoading(false);
-                                    view.showPlaces(searchResponse.getSearchResults().getPlaces());
+                                    places = searchResponse.getSearchResults().getPlaces();
+                                    view.showPlaces(places);
                                 }
                             }
                         }
@@ -199,8 +202,17 @@ public class MapPresenter implements MapContract.Presenter {
     }
 
     @Override
-    public void placeClick(Place place) {
+    public void goToPlace(PlaceLink place) {
+        navigator.openPlaceDetail(place);
+    }
 
+    private PlaceLink getPlace(String placeId) {
+        for (PlaceLink pl : places) {
+            if (pl.getId().equals(placeId)) {
+                return pl;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -228,6 +240,15 @@ public class MapPresenter implements MapContract.Presenter {
     public void myLocationClick() {
         if (lastPosition != null && view != null) {
             view.animateToPosition(lastPosition.getCoordinate(), MY_LOCATION_MAP_ZOOM);
+        }
+    }
+
+    @Override
+    public void markerClicked(String placeId, GeoCoordinate coordinate) {
+        PlaceLink place = getPlace(placeId);
+        if (view != null) {
+            view.animateToPosition(coordinate);
+            view.showPlaceDialog(place);
         }
     }
 }
