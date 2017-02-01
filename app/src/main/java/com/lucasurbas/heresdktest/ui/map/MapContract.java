@@ -1,5 +1,6 @@
 package com.lucasurbas.heresdktest.ui.map;
 
+import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.search.Place;
 import com.lucasurbas.heresdktest.model.MapSuggestion;
 import com.lucasurbas.heresdktest.ui.utils.BaseNavigator;
@@ -31,6 +32,12 @@ public interface MapContract {
         void askForLocationPermission();
 
         void initMap();
+
+        void showMapStyle(String normalDay);
+
+        void showMapZoom(double zoom);
+
+        void animateToPosition(GeoCoordinate geoCoordinate, double zoom);
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -53,5 +60,12 @@ public interface MapContract {
 
         void placeClick(Place place);
 
+        void mapStyleRegularClick();
+
+        void mapStyleSatelliteClick();
+
+        void mapStyleTerrainClick();
+
+        void myLocationClick();
     }
 }

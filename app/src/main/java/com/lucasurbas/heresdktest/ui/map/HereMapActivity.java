@@ -3,9 +3,12 @@ package com.lucasurbas.heresdktest.ui.map;
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
@@ -67,6 +70,18 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
         presenter.detachView();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.start();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.stop();
+    }
+
     private void setupSearchView() {
         compositeSubscription.add(
                 searchView.getOnQueryChangeObservable()
@@ -95,6 +110,29 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                                 presenter.getPlaces(query);
                             }
                         }));
+
+        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_map_regular:
+                        presenter.mapStyleRegularClick();
+                        break;
+
+                    case R.id.action_map_satellite:
+                        presenter.mapStyleSatelliteClick();
+                        break;
+
+                    case R.id.action_map_terrain:
+                        presenter.mapStyleTerrainClick();
+                        break;
+
+                    case R.id.action_map_my_location:
+                        presenter.myLocationClick();
+                        break;
+                }
+            }
+        });
 
     }
 
@@ -146,8 +184,6 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                 if (error == OnEngineInitListener.Error.NONE) {
                     // retrieve a reference of the map from the map fragment
                     map = mapFragment.getMap();
-                    // Set the zoom level to the average between min and max
-                    map.setZoomLevel(13);
                     // show position marker
                     map.getPositionIndicator().setVisible(true);
 
@@ -157,5 +193,26 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                 }
             }
         });
+    }
+
+    @Override
+    public void showMapStyle(String scheme) {
+        if (map != null) {
+            map.setMapScheme(scheme);
+        }
+    }
+
+    @Override
+    public void showMapZoom(double zoom) {
+        if (map != null) {
+            map.setZoomLevel(zoom);
+        }
+    }
+
+    @Override
+    public void animateToPosition(GeoCoordinate geoCoordinate, double zoom) {
+        if (map != null) {
+            map.setCenter(geoCoordinate, Map.Animation.LINEAR, zoom, -1, -1);
+        }
     }
 }

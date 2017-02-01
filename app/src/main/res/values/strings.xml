@@ -3,6 +3,7 @@
     <string name="app_name">HereSdkTest</string>
 
     <string name="action_retry">Retry</string>
+    <string name="action_map_my_location">My Location</string>
     <string name="action_map_satellite">Satellite</string>
     <string name="action_map_regular">Regular</string>
     <string name="action_map_terrain">Terain</string>

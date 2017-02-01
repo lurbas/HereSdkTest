@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.PositioningManager;
+import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.search.Place;
 import com.lucasurbas.heresdktest.api.PlacesApi;
 import com.lucasurbas.heresdktest.model.MapSuggestion;
@@ -21,6 +22,9 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MapPresenter implements MapContract.Presenter {
+
+    private static final double DEFAULT_MAP_ZOOM = 13;
+    private static final double MY_LOCATION_MAP_ZOOM = 16;
 
     private Context context;
     private MapContract.View view;
@@ -87,6 +91,9 @@ public class MapPresenter implements MapContract.Presenter {
     public void mapReady() {
         PositioningManager.getInstance().addListener(new WeakReference<>(positionListener));
         PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
+        if (view != null) {
+            view.showMapZoom(DEFAULT_MAP_ZOOM);
+        }
     }
 
     @Override
@@ -149,5 +156,33 @@ public class MapPresenter implements MapContract.Presenter {
     @Override
     public void placeClick(Place place) {
 
+    }
+
+    @Override
+    public void mapStyleRegularClick() {
+        if (view != null) {
+            view.showMapStyle(Map.Scheme.NORMAL_DAY);
+        }
+    }
+
+    @Override
+    public void mapStyleSatelliteClick() {
+        if (view != null) {
+            view.showMapStyle(Map.Scheme.SATELLITE_DAY);
+        }
+    }
+
+    @Override
+    public void mapStyleTerrainClick() {
+        if (view != null) {
+            view.showMapStyle(Map.Scheme.TERRAIN_DAY);
+        }
+    }
+
+    @Override
+    public void myLocationClick() {
+        if (lastPosition != null && view != null) {
+            view.animateToPosition(lastPosition.getCoordinate(), MY_LOCATION_MAP_ZOOM);
+        }
     }
 }
