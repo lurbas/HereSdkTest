@@ -15,6 +15,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class DetailPresenter implements DetailContract.Presenter {
 
@@ -26,11 +27,15 @@ public class DetailPresenter implements DetailContract.Presenter {
     private PlaceLink placeLink;
     private PlaceDetail placeDetail;
 
+    private CompositeSubscription compositeSubscription;
+
     @Inject
     public DetailPresenter(Context context, DetailContract.Navigator navigator, PlacesApi placesApi) {
         this.context = context;
         this.navigator = navigator;
         this.placesApi = placesApi;
+
+        this.compositeSubscription = new CompositeSubscription();
     }
 
     @Override
@@ -41,6 +46,7 @@ public class DetailPresenter implements DetailContract.Presenter {
     @Override
     public void detachView() {
         this.view = null;
+        compositeSubscription.unsubscribe();
     }
 
     @Override
@@ -59,10 +65,12 @@ public class DetailPresenter implements DetailContract.Presenter {
         if (view != null) {
             view.showLoading(true);
         }
-        placesApi.getPlace(placeLink.getDetailUrl())
+        // get place detail from API
+        compositeSubscription.add(placesApi.getPlace(placeLink.getDetailUrl())
                 .map(new Func1<PlaceResponse, PlaceDetail>() {
                     @Override
                     public PlaceDetail call(PlaceResponse placeResponse) {
+                        // transform api response to model easy readable by view
                         String name = placeResponse.getName();
                         String browserUrl = placeResponse.getBrowserUrl();
                         String htmlText = placeResponse.getLocation().getAddress().getHtmlText();
@@ -74,6 +82,7 @@ public class DetailPresenter implements DetailContract.Presenter {
                 .subscribe(new Action1<PlaceDetail>() {
                     @Override
                     public void call(PlaceDetail placeDetail) {
+                        // Success
                         DetailPresenter.this.placeDetail = placeDetail;
                         if (view != null) {
                             view.showLoading(false);
@@ -83,12 +92,13 @@ public class DetailPresenter implements DetailContract.Presenter {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        // Error
                         if (view != null) {
                             view.showLoading(false);
                             view.showToast(context.getString(R.string.error__getting_results));
                         }
                     }
-                });
+                }));
     }
 
     @Override

@@ -10,8 +10,8 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-
-public class RxSearchView extends FloatingSearchView{
+// Wrapper for FloatingSearchView to handle query changes and search click reactive way
+public class RxSearchView extends FloatingSearchView {
 
     public RxSearchView(Context context) {
         super(context);

@@ -54,6 +54,7 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     @BindView(R.id.activity_map__no_permissions) View noPermissions;
     @BindView(R.id.activity_map__search_view) RxSearchView searchView;
 
+    // list of markers needed for remove operation
     private List<MapObject> mapObjects = new ArrayList<>();
 
     // map embedded in the map fragment
@@ -61,6 +62,7 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
 
     @Override
     protected void setupActivityComponent(ApplicationComponent applicationComponent) {
+        // inject presenter
         DaggerMapComponent.builder()
                 .applicationComponent(applicationComponent)
                 .mapModule(new MapModule(this))

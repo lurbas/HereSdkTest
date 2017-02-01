@@ -65,12 +65,14 @@ public class DetailActivity extends BaseActivity implements DetailContract.View 
     }
 
     private void setupToolbar() {
+        // needed to catch back arrow click
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            // Handle back arrow click
             presenter.backArrowClick();
             return true;
         }

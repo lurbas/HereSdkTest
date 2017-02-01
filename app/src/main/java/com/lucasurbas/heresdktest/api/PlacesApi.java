@@ -8,6 +8,8 @@ import rx.Observable;
 
 public interface PlacesApi {
 
+    // All public methods from Places API
+
     Observable<AutoSuggestionResponse> getSuggestions(String query, double latitude, double longitude);
 
     Observable<SearchResponse> getSearches(String query, double latitude, double longitude);

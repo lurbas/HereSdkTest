@@ -96,6 +96,7 @@ public class MapPresenter implements MapContract.Presenter {
         if (PositioningManager.getInstance() != null) {
             PositioningManager.getInstance().removeListener(positionListener);
         }
+        // unsubscribe all requests
         compositeSubscription.unsubscribe();
         if (autoSuggestionSubscription != null && !autoSuggestionSubscription.isUnsubscribed()) {
             autoSuggestionSubscription.unsubscribe();
@@ -104,6 +105,7 @@ public class MapPresenter implements MapContract.Presenter {
 
     @Override
     public void start() {
+        // start listening for location updates
         if (PositioningManager.getInstance() != null) {
             PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
         }
@@ -111,6 +113,7 @@ public class MapPresenter implements MapContract.Presenter {
 
     @Override
     public void stop() {
+        // stop listening for location updates
         if (PositioningManager.getInstance() != null) {
             PositioningManager.getInstance().stop();
         }
@@ -122,6 +125,7 @@ public class MapPresenter implements MapContract.Presenter {
         PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
         if (view != null) {
             view.showMapZoom(DEFAULT_MAP_ZOOM);
+            // if activity was recreated we want to show previous search results
             if (places != null) {
                 view.showPlaces(places);
             }
@@ -190,6 +194,7 @@ public class MapPresenter implements MapContract.Presenter {
             if (view != null) {
                 view.showLoading(true);
             }
+            // unsubscribe auto suggestions when user start real search
             if (autoSuggestionSubscription != null && !autoSuggestionSubscription.isUnsubscribed()) {
                 autoSuggestionSubscription.unsubscribe();
             }
@@ -224,6 +229,7 @@ public class MapPresenter implements MapContract.Presenter {
 
     @Override
     public void goToPlace(PlaceLink place) {
+        // open detail screen
         navigator.openPlaceDetail(place);
     }
 
