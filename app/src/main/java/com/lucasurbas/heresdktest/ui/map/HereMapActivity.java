@@ -75,13 +75,23 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
         ButterKnife.bind(this);
         setupSearchView();
 
+        if (savedInstanceState != null) {
+            presenter.restoreState(savedInstanceState);
+        }
         presenter.attachView(this);
+        presenter.checkPermissions();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter.detachView();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        presenter.saveState(outState);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.lucasurbas.heresdktest.ui.map;
 
 
 import android.content.Context;
+import android.os.Bundle;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
@@ -9,11 +10,12 @@ import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.lucasurbas.heresdktest.R;
 import com.lucasurbas.heresdktest.api.PlacesApi;
-import com.lucasurbas.heresdktest.model.response.AutoSuggestionResponse;
 import com.lucasurbas.heresdktest.model.PlaceLink;
+import com.lucasurbas.heresdktest.model.response.AutoSuggestionResponse;
 import com.lucasurbas.heresdktest.model.response.SearchResponse;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,6 +29,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class MapPresenter implements MapContract.Presenter {
 
+    private static final String KEY_PLACES = "key_places";
+
     private static final double DEFAULT_MAP_ZOOM = 13;
     private static final double MY_LOCATION_MAP_ZOOM = 16;
 
@@ -39,7 +43,7 @@ public class MapPresenter implements MapContract.Presenter {
     private CompositeSubscription compositeSubscription;
     private Subscription autoSuggestionSubscription;
 
-    private List<PlaceLink> places;
+    private ArrayList<PlaceLink> places;
 
     // Define positioning listener
     private PositioningManager.OnPositionChangedListener positionListener = new
@@ -67,6 +71,20 @@ public class MapPresenter implements MapContract.Presenter {
     @Override
     public void attachView(MapContract.View view) {
         this.view = view;
+    }
+
+    @Override
+    public void saveState(Bundle outState) {
+        outState.putParcelableArrayList(KEY_PLACES, places);
+    }
+
+    @Override
+    public void restoreState(Bundle savedInstanceState) {
+        places = savedInstanceState.getParcelableArrayList(KEY_PLACES);
+    }
+
+    @Override
+    public void checkPermissions() {
         if (view != null) {
             view.askForLocationPermission();
         }
@@ -104,6 +122,9 @@ public class MapPresenter implements MapContract.Presenter {
         PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
         if (view != null) {
             view.showMapZoom(DEFAULT_MAP_ZOOM);
+            if (places != null) {
+                view.showPlaces(places);
+            }
         }
     }
 
@@ -181,7 +202,7 @@ public class MapPresenter implements MapContract.Presenter {
                             if (searchResponse.getSearchResults() != null && searchResponse.getSearchResults().getPlaces() != null && !searchResponse.getSearchResults().getPlaces().isEmpty()) {
                                 if (view != null) {
                                     view.showLoading(false);
-                                    places = searchResponse.getSearchResults().getPlaces();
+                                    places = new ArrayList<>(searchResponse.getSearchResults().getPlaces());
                                     view.showPlaces(places);
                                 }
                             }

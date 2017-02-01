@@ -1,5 +1,7 @@
 package com.lucasurbas.heresdktest.ui.map;
 
+import android.os.Bundle;
+
 import com.here.android.mpa.common.GeoCoordinate;
 import com.lucasurbas.heresdktest.model.PlaceLink;
 import com.lucasurbas.heresdktest.ui.utils.BaseNavigator;
@@ -46,6 +48,12 @@ public interface MapContract {
     }
 
     interface Presenter extends BasePresenter<View> {
+
+        void saveState(Bundle outState);
+
+        void restoreState(Bundle savedInstanceState);
+
+        void checkPermissions();
 
         void start();
 
