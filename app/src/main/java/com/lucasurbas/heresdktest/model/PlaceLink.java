@@ -71,4 +71,8 @@ public class PlaceLink implements SearchSuggestion {
     public double getLongitude() {
         return position != null ? position.get(1) : null;
     }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
 }

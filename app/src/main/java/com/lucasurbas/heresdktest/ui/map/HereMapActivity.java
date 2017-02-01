@@ -1,6 +1,7 @@
 package com.lucasurbas.heresdktest.ui.map;
 
 import android.Manifest;
+import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -25,7 +29,6 @@ import com.lucasurbas.heresdktest.ui.utils.BaseActivity;
 import com.lucasurbas.heresdktest.ui.widget.RxSearchView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -150,17 +153,21 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     @Override
     public void showPlaces(List<PlaceLink> places) {
         map.removeMapObjects(mapObjects);
-        for (PlaceLink placeLink : places) {
-            Image image = new Image();
-            try {
-                image.setImageResource(R.drawable.marker);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            MapMarker mapMarker = new MapMarker(new GeoCoordinate(placeLink.getLatitude(), placeLink.getLongitude()), image);
-            mapMarker.setAnchorPoint(new PointF(image.getWidth() / 2, image.getHeight()));
-            mapObjects.add(mapMarker);
-            map.addMapObject(mapMarker);
+        for (final PlaceLink placeLink : places) {
+            Glide.with(getApplicationContext())
+                    .load(placeLink.getIconUrl())
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                            Image image = new Image();
+                            image.setBitmap(resource); // Possibly runOnUiThread()
+                            MapMarker mapMarker = new MapMarker(new GeoCoordinate(placeLink.getLatitude(), placeLink.getLongitude()), image);
+                            mapMarker.setAnchorPoint(new PointF(image.getWidth() / 2, image.getHeight()));
+                            mapObjects.add(mapMarker);
+                            map.addMapObject(mapMarker);
+                        }
+                    });
         }
     }
 

@@ -189,6 +189,7 @@ public class MapPresenter implements MapContract.Presenter {
                             if (view != null) {
                                 view.showLoading(false);
                                 view.showToast(context.getString(R.string.error__getting_results));
+                                view.showToast(throwable.getMessage());
                             }
                         }
                     }));
