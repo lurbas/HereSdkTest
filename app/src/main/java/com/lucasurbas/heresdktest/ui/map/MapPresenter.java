@@ -7,19 +7,23 @@ import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.search.Place;
+import com.lucasurbas.heresdktest.R;
 import com.lucasurbas.heresdktest.api.PlacesApi;
-import com.lucasurbas.heresdktest.model.MapSuggestion;
-import com.lucasurbas.heresdktest.model.MapSuggestionResponse;
+import com.lucasurbas.heresdktest.model.AutoSuggestionResponse;
+import com.lucasurbas.heresdktest.model.PlaceLink;
+import com.lucasurbas.heresdktest.model.SearchResponse;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class MapPresenter implements MapContract.Presenter {
 
@@ -31,6 +35,9 @@ public class MapPresenter implements MapContract.Presenter {
     private MapContract.Navigator navigator;
     private GeoPosition lastPosition;
     private PlacesApi placesApi;
+
+    private CompositeSubscription compositeSubscription;
+    private Subscription autoSuggestionSubscription;
 
     // Define positioning listener
     private PositioningManager.OnPositionChangedListener positionListener = new
@@ -51,11 +58,16 @@ public class MapPresenter implements MapContract.Presenter {
         this.context = context;
         this.navigator = navigator;
         this.placesApi = placesApi;
+
+        this.compositeSubscription = new CompositeSubscription();
     }
 
     @Override
     public void attachView(MapContract.View view) {
         this.view = view;
+        if (view != null) {
+            view.askForLocationPermission();
+        }
     }
 
     @Override
@@ -64,12 +76,9 @@ public class MapPresenter implements MapContract.Presenter {
         if (PositioningManager.getInstance() != null) {
             PositioningManager.getInstance().removeListener(positionListener);
         }
-    }
-
-    @Override
-    public void create() {
-        if (view != null) {
-            view.askForLocationPermission();
+        compositeSubscription.unsubscribe();
+        if (autoSuggestionSubscription != null && !autoSuggestionSubscription.isUnsubscribed()) {
+            autoSuggestionSubscription.unsubscribe();
         }
     }
 
@@ -116,41 +125,76 @@ public class MapPresenter implements MapContract.Presenter {
     @Override
     public void getAutoSuggestions(String query) {
         if (lastPosition != null) {
-            placesApi.getSuggestions(query, lastPosition.getCoordinate().getLatitude(), lastPosition.getCoordinate().getLongitude())
+            if (autoSuggestionSubscription != null && !autoSuggestionSubscription.isUnsubscribed()) {
+                autoSuggestionSubscription.unsubscribe();
+            }
+            autoSuggestionSubscription = placesApi.getSuggestions(query, lastPosition.getCoordinate().getLatitude(), lastPosition.getCoordinate().getLongitude())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .filter(new Func1<MapSuggestionResponse, Boolean>() {
+                    .filter(new Func1<AutoSuggestionResponse, Boolean>() {
                         @Override
-                        public Boolean call(MapSuggestionResponse mapSuggestionResponse) {
+                        public Boolean call(AutoSuggestionResponse autoSuggestionResponse) {
                             // filter empty results
-                            return mapSuggestionResponse.getSuggestions() != null && !mapSuggestionResponse.getSuggestions().isEmpty();
+                            return autoSuggestionResponse.getSuggestions() != null && !autoSuggestionResponse.getSuggestions().isEmpty();
                         }
                     })
-                    .map(new Func1<MapSuggestionResponse, List<MapSuggestion>>() {
+                    .map(new Func1<AutoSuggestionResponse, List<PlaceLink>>() {
                         @Override
-                        public List<MapSuggestion> call(MapSuggestionResponse mapSuggestionResponse) {
-                            return mapSuggestionResponse.getSuggestions();
+                        public List<PlaceLink> call(AutoSuggestionResponse autoSuggestionResponse) {
+                            return autoSuggestionResponse.getSuggestions();
                         }
                     })
-                    .subscribe(new Action1<List<MapSuggestion>>() {
-                        @Override
-                        public void call(List<MapSuggestion> mapSuggestions) {
-                            if (view != null) {
-                                view.showAutoSuggestions(mapSuggestions);
-                            }
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            // empty
-                        }
-                    });
+                    .subscribe(new Action1<List<PlaceLink>>() {
+                                   @Override
+                                   public void call(List<PlaceLink> mapSuggestions) {
+                                       if (view != null) {
+                                           view.showAutoSuggestions(mapSuggestions);
+                                       }
+                                   }
+                               }, new Action1<Throwable>() {
+                                   @Override
+                                   public void call(Throwable throwable) {
+                                       // empty
+                                   }
+                               }
+                    );
         }
     }
 
     @Override
     public void getPlaces(String query) {
-
+        if (lastPosition != null) {
+            if (view != null) {
+                view.showLoading(true);
+            }
+            if (autoSuggestionSubscription != null && !autoSuggestionSubscription.isUnsubscribed()) {
+                autoSuggestionSubscription.unsubscribe();
+            }
+            compositeSubscription.add(placesApi.getSearches(query, lastPosition.getCoordinate().getLatitude(), lastPosition.getCoordinate().getLongitude())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<SearchResponse>() {
+                        @Override
+                        public void call(SearchResponse searchResponse) {
+                            if (searchResponse.getSearchResults() != null && searchResponse.getSearchResults().getPlaces() != null && !searchResponse.getSearchResults().getPlaces().isEmpty()) {
+                                if (view != null) {
+                                    view.showLoading(false);
+                                    view.showPlaces(searchResponse.getSearchResults().getPlaces());
+                                }
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            if (view != null) {
+                                view.showLoading(false);
+                                view.showToast(context.getString(R.string.error__getting_results));
+                            }
+                        }
+                    }));
+        } else if (view != null) {
+            view.showToast(context.getString(R.string.error__no_location));
+        }
     }
 
     @Override

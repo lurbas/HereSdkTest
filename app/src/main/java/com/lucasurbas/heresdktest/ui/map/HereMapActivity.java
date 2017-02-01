@@ -1,6 +1,7 @@
 package com.lucasurbas.heresdktest.ui.map;
 
 import android.Manifest;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -9,19 +10,23 @@ import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
-import com.here.android.mpa.search.Place;
+import com.here.android.mpa.mapping.MapMarker;
+import com.here.android.mpa.mapping.MapObject;
 import com.lucasurbas.heresdktest.R;
 import com.lucasurbas.heresdktest.injection.app.ApplicationComponent;
 import com.lucasurbas.heresdktest.injection.map.DaggerMapComponent;
 import com.lucasurbas.heresdktest.injection.map.MapModule;
-import com.lucasurbas.heresdktest.model.MapSuggestion;
+import com.lucasurbas.heresdktest.model.PlaceLink;
 import com.lucasurbas.heresdktest.ui.utils.BaseActivity;
 import com.lucasurbas.heresdktest.ui.widget.RxSearchView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +45,8 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
 
     @BindView(R.id.activity_map__no_permissions) View noPermissions;
     @BindView(R.id.activity_map__search_view) RxSearchView searchView;
+
+    private List<MapObject> mapObjects = new ArrayList<>();
 
     // map embedded in the map fragment
     private Map map;
@@ -61,7 +68,6 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
         setupSearchView();
 
         presenter.attachView(this);
-        presenter.create();
     }
 
     @Override
@@ -92,7 +98,7 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
                                 return query.length() >= 2;
                             }
                         })
-                        .debounce(500, TimeUnit.MILLISECONDS)
+                        .debounce(200, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<String>() {
                             @Override
@@ -142,8 +148,20 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     }
 
     @Override
-    public void showPlaces(List<Place> places) {
-
+    public void showPlaces(List<PlaceLink> places) {
+        map.removeMapObjects(mapObjects);
+        for (PlaceLink placeLink : places) {
+            Image image = new Image();
+            try {
+                image.setImageResource(R.drawable.marker);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            MapMarker mapMarker = new MapMarker(new GeoCoordinate(placeLink.getLatitude(), placeLink.getLongitude()), image);
+            mapMarker.setAnchorPoint(new PointF(image.getWidth() / 2, image.getHeight()));
+            mapObjects.add(mapMarker);
+            map.addMapObject(mapMarker);
+        }
     }
 
     @Override
@@ -152,7 +170,7 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     }
 
     @Override
-    public void showAutoSuggestions(List<MapSuggestion> suggestions) {
+    public void showAutoSuggestions(List<PlaceLink> suggestions) {
         searchView.swapSuggestions(suggestions);
     }
 
@@ -177,6 +195,9 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     public void initMap() {
         // Search for the map fragment to finish setup by calling init().
         final MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.activity_map__fragment_map);
+        // It's impossible to remove markers after rotation as there is no method to obtain all markers on map
+        // a workaround is to not retain fragment
+        mapFragment.setRetainInstance(false);
         mapFragment.init(new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(
@@ -213,6 +234,15 @@ public class HereMapActivity extends BaseActivity implements MapContract.View {
     public void animateToPosition(GeoCoordinate geoCoordinate, double zoom) {
         if (map != null) {
             map.setCenter(geoCoordinate, Map.Animation.LINEAR, zoom, -1, -1);
+        }
+    }
+
+    @Override
+    public void showLoading(boolean show) {
+        if (show) {
+            searchView.showProgress();
+        } else {
+            searchView.hideProgress();
         }
     }
 }

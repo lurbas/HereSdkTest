@@ -1,7 +1,8 @@
 package com.lucasurbas.heresdktest.api;
 
 
-import com.lucasurbas.heresdktest.model.MapSuggestionResponse;
+import com.lucasurbas.heresdktest.model.AutoSuggestionResponse;
+import com.lucasurbas.heresdktest.model.SearchResponse;
 
 import java.util.Locale;
 
@@ -11,7 +12,8 @@ import rx.Observable;
 
 public class PlacesApiClient implements PlacesApi {
 
-    private static final int SIZE = 10;
+    private static final int SUGGESTIONS_SIZE = 10;
+    private static final int SEARCH_SIZE = 5;
     private PlacesApiService apiService;
 
     @Inject
@@ -20,9 +22,15 @@ public class PlacesApiClient implements PlacesApi {
     }
 
     @Override
-    public Observable<MapSuggestionResponse> getSuggestions(String query, double latitude, double longitude) {
+    public Observable<AutoSuggestionResponse> getSuggestions(String query, double latitude, double longitude) {
         String at = getAt(latitude, longitude);
-        return apiService.getSuggestions(query, at, SIZE, ApiConstants.HERE_APP_CODE, ApiConstants.HERE_APP_ID);
+        return apiService.getSuggestions(query, at, SUGGESTIONS_SIZE, ApiConstants.HERE_APP_CODE, ApiConstants.HERE_APP_ID);
+    }
+
+    @Override
+    public Observable<SearchResponse> getSearches(String query, double latitude, double longitude) {
+        String at = getAt(latitude, longitude);
+        return apiService.getSearches(query, at, SEARCH_SIZE, ApiConstants.HERE_APP_CODE, ApiConstants.HERE_APP_ID);
     }
 
     private String getAt(double latitude, double longitude) {

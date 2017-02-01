@@ -2,7 +2,7 @@ package com.lucasurbas.heresdktest.ui.map;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.search.Place;
-import com.lucasurbas.heresdktest.model.MapSuggestion;
+import com.lucasurbas.heresdktest.model.PlaceLink;
 import com.lucasurbas.heresdktest.ui.utils.BaseNavigator;
 import com.lucasurbas.heresdktest.ui.utils.BasePresenter;
 import com.lucasurbas.heresdktest.ui.utils.BaseView;
@@ -21,11 +21,11 @@ public interface MapContract {
 
     interface View extends BaseView {
 
-        void showPlaces(List<Place> places);
+        void showPlaces(List<PlaceLink> places);
 
         void showNoPermissionScreen(boolean show);
 
-        void showAutoSuggestions(List<MapSuggestion> suggestions);
+        void showAutoSuggestions(List<PlaceLink> suggestions);
 
         void showToast(String message);
 
@@ -38,11 +38,11 @@ public interface MapContract {
         void showMapZoom(double zoom);
 
         void animateToPosition(GeoCoordinate geoCoordinate, double zoom);
+
+        void showLoading(boolean show);
     }
 
     interface Presenter extends BasePresenter<View> {
-
-        void create();
 
         void start();
 

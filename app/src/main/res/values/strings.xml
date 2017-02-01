@@ -6,8 +6,11 @@
     <string name="action_map_my_location">My Location</string>
     <string name="action_map_satellite">Satellite</string>
     <string name="action_map_regular">Regular</string>
-    <string name="action_map_terrain">Terain</string>
+    <string name="action_map_terrain">Terrain</string>
 
     <string name="activity_map__no_permissions">HereSdkTest needs access to Location Permission</string>
     <string name="activity_map__search_hint">Search…</string>
+
+    <string name="error__no_location">Couldn\'t find your location…</string>
+    <string name="error__getting_results">Error while getting results</string>
 </resources>
