@@ -15,6 +15,8 @@ public interface DetailContract {
 
         void finish();
 
+        void openInBrowser(String url);
+
     }
 
     interface View extends BaseView {
@@ -33,5 +35,9 @@ public interface DetailContract {
         void initWith(PlaceLink placeLink);
 
         void getPlaceDetail();
+
+        void openInBrowserClick();
+
+        void backArrowClick();
     }
 }

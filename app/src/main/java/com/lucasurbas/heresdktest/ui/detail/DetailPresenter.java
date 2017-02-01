@@ -90,4 +90,17 @@ public class DetailPresenter implements DetailContract.Presenter {
                     }
                 });
     }
+
+    @Override
+    public void openInBrowserClick() {
+        if (placeDetail == null) {
+            return;
+        }
+        navigator.openInBrowser(placeDetail.getBrowserUrl());
+    }
+
+    @Override
+    public void backArrowClick() {
+        navigator.finish();
+    }
 }

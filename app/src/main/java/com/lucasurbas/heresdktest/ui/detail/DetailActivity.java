@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class DetailActivity extends BaseActivity implements DetailContract.View {
@@ -54,6 +56,7 @@ public class DetailActivity extends BaseActivity implements DetailContract.View 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
+        setupToolbar();
 
         PlaceLink placeLink = getIntent().getParcelableExtra(KEY_PLACE_LINK);
         presenter.attachView(this);
@@ -61,10 +64,28 @@ public class DetailActivity extends BaseActivity implements DetailContract.View 
         presenter.getPlaceDetail();
     }
 
+    private void setupToolbar() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            presenter.backArrowClick();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter.detachView();
+    }
+
+    @OnClick(R.id.activity_detail__open_browser)
+    public void onOpenInBrowserClick() {
+        presenter.openInBrowserClick();
     }
 
     @Override
