@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.HereSdkTest" parent="Base.Theme.HereSdkTest">
+    <style name="Theme.HereSdkTest.NoActionBar" parent="Base.Theme.HereSdkTest.NoActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentStatus">true</item>

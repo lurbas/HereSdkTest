@@ -15,7 +15,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.HereSdkTest">
+        android:theme="@style/Theme.HereSdkTest.NoActionBar">
 
         <activity android:name=".ui.map.HereMapActivity">
             <intent-filter>
@@ -24,6 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.detail.DetailActivity"
+            android:theme="@style/Theme.HereSdkTest"/>
 
         <meta-data
             android:name="com.here.android.maps.appid"
